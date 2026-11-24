@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>kyoycards</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#1D4ED8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="kyoycards">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF2F6;--card:#FFFFFF;--ink:#16212C;--mute:#5B6B7A;--line:#CBD5DF;--acc:#1D4ED8;--accink:#FFFFFF;--again:#B42318;--hard:#B54708;--good:#0F766E;--easy:#1D4ED8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1720;--card:#18232F;--ink:#E6EDF4;--mute:#93A4B5;--line:#2C3B4B;--acc:#6EA0FF;--accink:#0B1220;--again:#FF8A80;--hard:#FFB74D;--good:#4DD0C4;--easy:#6EA0FF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1720;--card:#18232F;--ink:#E6EDF4;--mute:#93A4B5;--line:#2C3B4B;--acc:#6EA0FF;--accink:#0B1220;--again:#FF8A80;--hard:#FFB74D;--good:#4DD0C4;--easy:#6EA0FF;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Bricolage Grotesque",system-ui,sans-serif;min-height:100vh}
+main{max-width:560px;margin:0 auto;padding:16px}
+header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+h1{font-size:22px;font-weight:800;margin:0;letter-spacing:-.02em}
+.counts{display:flex;gap:14px;font-size:14px;color:var(--mute)}
+.counts b{font-weight:600;color:var(--ink)}
+nav{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px}
+nav button{flex:1;background:none;border:0;border-bottom:3px solid transparent;padding:10px 0;font:inherit;font-weight:600;color:var(--mute);cursor:pointer}
+nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--acc)}
+button:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.face{background:var(--card);border:1px solid var(--line);border-radius:10px;min-height:240px;padding:24px;display:flex;flex-direction:column;justify-content:center;text-align:center;font:600 26px/1.35 "Source Serif 4",Georgia,serif;overflow-wrap:anywhere;cursor:pointer}
+.face .ans{margin-top:18px;padding-top:18px;border-top:1px dashed var(--line);font-weight:400;font-size:22px}
+.hint{color:var(--mute);font:400 14px "Bricolage Grotesque",system-ui,sans-serif;margin-top:16px}
+.row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.row button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-radius:8px;border:2px solid currentColor;background:var(--card);font:600 15px inherit;font-family:inherit;cursor:pointer}
+.row small{font-weight:400;font-size:12px;color:var(--mute)}
+.big{width:100%;margin-top:12px;padding:14px;border:0;border-radius:8px;background:var(--acc);color:var(--accink);font:600 16px "Bricolage Grotesque",system-ui,sans-serif;cursor:pointer}
+.ghost{background:none;border:1px solid var(--line);color:var(--ink)}
+textarea{width:100%;min-height:150px;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:15px/1.5 "Bricolage Grotesque",system-ui,sans-serif;resize:vertical}
+label{display:block;font-weight:600;margin:0 0 6px}
+.msg{min-height:22px;margin-top:8px;color:var(--mute);font-size:14px}
+ul{list-style:none;margin:0;padding:0}
+li{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+li div{flex:1;min-width:0}
+li span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+li small{color:var(--mute)}
+li button{background:none;border:0;color:var(--again);font:inherit;cursor:pointer;padding:6px}
+.empty{text-align:center;color:var(--mute);padding:40px 0}
+.face{white-space:pre-line}
+.face img,.thumb{max-width:100%;max-height:260px;margin:12px auto 0;border-radius:6px;display:block}
+sup,sub{line-height:0}
+.bar{display:flex;gap:8px;margin-bottom:12px}
+select,input[type=text]{flex:1;min-width:0;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit}
+.pics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.pick{display:block;padding:10px;border:1px dashed var(--line);border-radius:8px;text-align:center;font-weight:400;cursor:pointer;color:var(--mute);margin:0}
+.pick img{max-height:70px;max-width:100%;display:block;margin:6px auto 0;border-radius:4px}
+details{margin-top:16px}summary{cursor:pointer;font-weight:600}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<header><h1>kyoycards</h1><div class="counts"><span>New <b id="cN">0</b></span><span>Learning <b id="cL">0</b></span><span>Due <b id="cD">0</b></span></div></header>
+<nav role="tablist">
+<button role="tab" data-t="study" aria-selected="true">Study</button>
+<button role="tab" data-t="add" aria-selected="false">Add</button>
+<button role="tab" data-t="cards" aria-selected="false">Cards</button>
+</nav>
+
+<section id="study">
+<div class="bar"><select id="deckSel" aria-label="Deck"></select></div>
+<div id="face" class="face" tabindex="0" role="button" aria-label="Show answer"></div>
+<div id="rate" class="row" hidden></div>
+<button id="show" class="big">Show answer</button>
+</section>
+
+<section id="add" hidden>
+<label for="deckIn">Deck</label>
+<input id="deckIn" type="text" list="decks" value="Maths">
+<datalist id="decks"></datalist>
+<label for="fq" style="margin-top:12px">Front</label>
+<textarea id="fq" style="min-height:80px" placeholder="Question. Use x^2 or x_{n+1} for powers and subscripts"></textarea>
+<label for="fa" style="margin-top:12px">Back</label>
+<textarea id="fa" style="min-height:80px"></textarea>
+<div class="pics"><label class="pick">Front image<input id="fi" type="file" accept="image/*" hidden><span id="fiv"></span></label><label class="pick">Back image<input id="bi" type="file" accept="image/*" hidden><span id="biv"></span></label></div>
+<button id="addBtn" class="big">Add card</button>
+<div id="addMsg" class="msg" aria-live="polite"></div>
+<details><summary>Bulk add text cards</summary><textarea id="bulk" style="margin-top:8px" placeholder="question :: answer"></textarea><button id="bulkBtn" class="big ghost">Add all</button></details>
+</section>
+
+<section id="cards" hidden>
+<ul id="list"></ul>
+<button id="exp" class="big ghost">Export backup</button>
+<textarea id="io" placeholder="Paste a backup here, then tap Import" style="margin-top:12px;min-height:90px"></textarea>
+<button id="imp" class="big ghost">Import backup</button>
+<div id="ioMsg" class="msg" aria-live="polite"></div>
+</section>
+</main>
+
+<script>
+(function(){
+var KEY='kyoycards.v1', NEW_LIMIT=20, M=60000, D=86400000;
+var S={cards:[],day:'',newToday:0}, cur=null, shown=false;
+var $=function(i){return document.getElementById(i)};
+
+function load(){try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);if(o&&Array.isArray(o.cards))S=o}}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){$('addMsg').textContent='Storage is full. Export a backup, then delete cards with large images.';return false}}
+function today(){return new Date().toDateString()}
+function rollDay(){if(S.day!==today()){S.day=today();S.newToday=0}}
+
+/* Scheduler: SM-2 style. r: 0 again, 1 hard, 2 good, 3 easy */
+function sched(c,r,fuzz){
+  var n=Object.assign({},c), now=Date.now();
+  function grad(d){n.state='review';n.ivl=d;n.step=0;
+    var f=fuzz&&d>2?(0.95+Math.random()*0.1):1;n.due=now+d*D*f}
+  if(c.state!=='review'){
+    var relearn=c.ivl>0;
+    if(r===0){n.state='learn';n.step=0;n.due=now+M}
+    else if(r===1){n.state='learn';n.due=now+(c.step===1?10:6)*M}
+    else if(r===2){
+      if(c.step===1||relearn)grad(relearn?c.ivl:1);
+      else{n.state='learn';n.step=1;n.due=now+10*M}
+    }else grad(relearn?Math.max(4,Math.round(c.ivl*1.3)):4);
+  }else{
+    var i=c.ivl,e=c.ease;
+    if(r===0){n.lapses=(c.lapses||0)+1;n.ease=Math.max(1.3,e-0.2);n.ivl=Math.max(1,Math.round(i*0.5));n.state='learn';n.step=0;n.due=now+M}
+    else if(r===1){n.ease=Math.max(1.3,e-0.15);grad(Math.max(i+1,Math.round(i*1.2)))}
+    else if(r===2){grad(Math.max(i+1,Math.round(i*e)))}
+    else{n.ease=e+0.15;grad(Math.max(i+1,Math.round(i*e*1.3)))}
+  }
+  return n;
+}
+function fmt(ms){
+  if(ms<M*1.5)return '1m';
+  if(ms<3600000)return Math.round(ms/M)+'m';
+  if(ms<D)return Math.round(ms/3600000)+'h';
+  var d=ms/D;return d<30?Math.round(d)+'d':(d/30).toFixed(1).replace('.0','')+'mo';
+}
+
+function counts(){
+  var now=Date.now(),l=0,d=0,nw=0;
+  pool().forEach(function(c){
+    if(c.state==='new')nw++;
+    else if(c.due<=now){c.state==='learn'?l++:d++}
+  });
+  return {n:Math.min(nw,Math.max(0,NEW_LIMIT-S.newToday)),l:l,d:d,nextLearn:pool().filter(function(c){return c.state==='learn'&&c.due>now}).map(function(c){return c.due}).sort()[0]};
+}
+function pick(){
+  rollDay();var now=Date.now();
+  var due=pool().filter(function(c){return c.state!=='new'&&c.due<=now}).sort(function(a,b){return a.due-b.due});
+  if(due.length)return due[0];
+  if(S.newToday<NEW_LIMIT){var nw=pool().find(function(c){return c.state==='new'});if(nw)return nw}
+  return null;
+}
+
+function render(){
+  fillDecks();var k=counts();$('cN').textContent=k.n;$('cL').textContent=k.l;$('cD').textContent=k.d;
+  cur=pick();shown=false;
+  var face=$('face'),rate=$('rate'),show=$('show');
+  rate.hidden=true;face.textContent='';
+  if(!cur){
+    show.hidden=true;face.style.cursor='default';face.removeAttribute('role');
+    var t=document.createElement('div');
+    if(!S.cards.length)t.textContent='No cards yet. Add some in the Add tab.';
+    else if(k.nextLearn)t.textContent='Done for now. Next card in '+fmt(k.nextLearn-Date.now())+'.';
+    else t.textContent='All done for today.';
+    face.appendChild(t);return;
+  }
+  show.hidden=false;face.style.cursor='pointer';face.setAttribute('role','button');
+  var q=document.createElement('div');rich(q,cur.f);face.appendChild(q);if(cur.fi)face.appendChild(img(cur.fi));
+  var h=document.createElement('div');h.className='hint';h.textContent='Tap to show answer';face.appendChild(h);
+}
+function reveal(){
+  if(!cur||shown)return;shown=true;
+  var face=$('face');face.querySelector('.hint').remove();
+  var a=document.createElement('div');a.className='ans';rich(a,cur.b);if(cur.bi)a.appendChild(img(cur.bi));face.appendChild(a);
+  $('show').hidden=true;
+  var rate=$('rate');rate.textContent='';rate.hidden=false;
+  var names=['Again','Hard','Good','Easy'],cols=['--again','--hard','--good','--easy'];
+  names.forEach(function(nm,r){
+    var b=document.createElement('button');b.style.color='var('+cols[r]+')';
+    var s=document.createElement('span');s.textContent=nm;
+    var sm=document.createElement('small');sm.textContent=fmt(sched(cur,r,false).due-Date.now());
+    b.appendChild(s);b.appendChild(sm);
+    b.onclick=function(){answer(r)};rate.appendChild(b);
+  });
+}
+function answer(r){
+  var i=S.cards.indexOf(cur);if(i<0)return;
+  if(cur.state==='new')S.newToday++;
+  var n=sched(cur,r,true);
+  S.cards[i]=n;
+  var log;try{log=JSON.parse(localStorage.getItem(KEY+'.log')||'[]')}catch(e){log=[]}
+  save();render();
+}
+
+function list(){
+  var ul=$('list');ul.textContent='';
+  if(!S.cards.length){var e=document.createElement('div');e.className='empty';e.textContent='No cards yet.';ul.appendChild(e);return}
+  S.cards.forEach(function(c){
+    var li=document.createElement('li'),d=document.createElement('div');
+    var a=document.createElement('span');a.textContent=c.f||'(image)';
+    var b=document.createElement('small');
+    b.textContent=c.state==='new'?'New':(c.state==='learn'?'Learning':'Review, '+c.ivl+'d interval, ease '+Math.round(c.ease*100)+'%');
+    b.textContent=c.deck+(c.fi||c.bi?', with image, ':', ')+b.textContent;d.appendChild(a);d.appendChild(b);
+    var x=document.createElement('button');x.textContent='Delete';x.setAttribute('aria-label','Delete card '+c.f);
+    x.onclick=function(){S.cards=S.cards.filter(function(k){return k.id!==c.id});save();list();render()};
+    li.appendChild(d);li.appendChild(x);ul.appendChild(li);
+  });
+}
+function pool(){return S.cards.filter(function(c){return !S.deck||c.deck===S.deck})}
+function decks(){var o={};S.cards.forEach(function(c){o[c.deck||'General']=1});['Maths','Econ','Physics'].forEach(function(d){o[d]=1});return Object.keys(o).sort()}
+function fillDecks(){
+  var ds=decks(),sel=$('deckSel');
+  if(S.deck&&ds.indexOf(S.deck)<0)S.deck='';
+  sel.textContent='';
+  [''].concat(ds).forEach(function(d){var o=document.createElement('option');o.value=d;o.textContent=d||'All decks';if(d===S.deck)o.selected=true;sel.appendChild(o)});
+  var dl=$('decks');dl.textContent='';ds.forEach(function(d){var o=document.createElement('option');o.value=d;dl.appendChild(o)});
+}
+function rich(el,t){
+  el.textContent='';
+  var re=/([\^_])(\{[^}]*\}|-?[A-Za-z0-9]+)/g,i=0,m;
+  while((m=re.exec(t))){
+    if(m.index>i)el.appendChild(document.createTextNode(t.slice(i,m.index)));
+    var s=document.createElement(m[1]==='^'?'sup':'sub');
+    s.textContent=m[2].replace(/^\{|\}$/g,'');el.appendChild(s);i=re.lastIndex;
+  }
+  if(i<t.length)el.appendChild(document.createTextNode(t.slice(i)));
+}
+function img(src){var im=document.createElement('img');im.src=src;im.alt='Card image';return im}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function newCard(f,b,fi,bi){return {id:uid(),f:f,b:b,fi:fi||'',bi:bi||'',deck:$('deckIn').value.trim()||'General',state:'new',step:0,ease:2.5,ivl:0,lapses:0,due:0}}
+
+var pend={fi:'',bi:''};
+function shrink(file,cb){
+  var r=new FileReader();
+  r.onload=function(){var im=new Image();im.onload=function(){
+    var s=Math.min(1,800/Math.max(im.width,im.height)),cv=document.createElement('canvas');
+    cv.width=Math.round(im.width*s);cv.height=Math.round(im.height*s);
+    var x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,cv.width,cv.height);x.drawImage(im,0,0,cv.width,cv.height);
+    cb(cv.toDataURL('image/jpeg',0.75))};im.src=r.result};
+  r.readAsDataURL(file);
+}
+function setPic(k,file){shrink(file,function(u){pend[k]=u;var p=$(k+'v');p.textContent='';p.appendChild(img(u))})}
+$('fi').onchange=function(){if(this.files[0])setPic('fi',this.files[0])};
+$('bi').onchange=function(){if(this.files[0])setPic('bi',this.files[0])};
+document.addEventListener('paste',function(e){
+  var it=(e.clipboardData||{}).items||[];
+  for(var i=0;i<it.length;i++)if(it[i].type.indexOf('image')===0&&!$('add').hidden){setPic(pend.fi&&!pend.bi?'bi':'fi',it[i].getAsFile());e.preventDefault();return}
+});
+$('addBtn').onclick=function(){
+  var f=$('fq').value.trim(),b=$('fa').value.trim();
+  if(!(f||pend.fi)||!(b||pend.bi)){$('addMsg').textContent='Add text or an image to both the front and the back.';return}
+  S.cards.push(newCard(f,b,pend.fi,pend.bi));
+  if(!save()){S.cards.pop();return}
+  $('fq').value='';$('fa').value='';pend={fi:'',bi:''};$('fiv').textContent='';$('biv').textContent='';
+  $('addMsg').textContent='Card added to '+S.cards[S.cards.length-1].deck+'.';render();
+};
+$('bulkBtn').onclick=function(){
+  var n=0;
+  $('bulk').value.split('\n').forEach(function(line){
+    var p=line.split('::');
+    if(p.length>=2&&p[0].trim()&&p.slice(1).join('::').trim()){S.cards.push(newCard(p[0].trim(),p.slice(1).join('::').trim()));n++}
+  });
+  if(n){save();$('bulk').value='';$('addMsg').textContent='Added '+n+(n===1?' card.':' cards.');render()}
+  else $('addMsg').textContent='No cards added. Use the format: question :: answer';
+};
+$('exp').onclick=function(){$('io').value=JSON.stringify(S);$('io').select();$('ioMsg').textContent='Backup is in the box. Copy it somewhere safe.'};
+$('imp').onclick=function(){
+  try{
+    var o=JSON.parse($('io').value);
+    if(!o||!Array.isArray(o.cards))throw 0;
+    var have={};S.cards.forEach(function(c){have[c.id]=1});
+    var n=0;o.cards.forEach(function(c){if(c&&c.id&&typeof c.f==='string'&&typeof c.b==='string'&&!have[c.id]){S.cards.push(c);n++}});
+    save();list();render();$('ioMsg').textContent='Imported '+n+' new cards.';
+  }catch(e){$('ioMsg').textContent='That backup could not be read. Export again and paste the full text.'}
+};
+$('show').onclick=reveal;
+$('deckSel').onchange=function(){S.deck=this.value;save();render()};
+$('face').onclick=reveal;
+$('face').onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();reveal()}};
+document.addEventListener('keydown',function(e){
+  if(e.target.tagName==='TEXTAREA'||$('study').hidden)return;
+  if(!shown&&e.key===' '){e.preventDefault();reveal()}
+  else if(shown&&'1234'.indexOf(e.key)>-1&&e.key)answer(+e.key-1);
+});
+document.querySelectorAll('nav button').forEach(function(b){
+  b.onclick=function(){
+    document.querySelectorAll('nav button').forEach(function(x){x.setAttribute('aria-selected',x===b)});
+    ['study','add','cards'].forEach(function(id){$(id).hidden=id!==b.dataset.t});
+    if(b.dataset.t==='cards')list();
+    if(b.dataset.t==='study')render();
+  };
+});
+load();S.cards.forEach(function(c){if(!c.deck)c.deck='General'});render();
+setInterval(function(){if(!$('study').hidden&&!shown&&!cur)render()},30000);
+})();
+</script>
+<script>
+if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});
+</script>
+</body>
+</html>
